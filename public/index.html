@@ -2,36 +2,35 @@
 <html lang="en" dir="rtl">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="PI-Box Media Center"
-    />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
+    <meta name="description" content="PI-Box Media Center - A web-based management interface for Pi-Box." />
+    
+    <!-- Favicon -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    
+    <!-- Page Title -->
     <title>PI-Box Media Center</title>
+    
+    <!-- Additional Notes -->
+    <!--
+      %PUBLIC_URL% is dynamically replaced during the build process.
+      This ensures that paths are correctly resolved in different environments.
+      Running `npm run build` will replace these placeholders.
+    -->
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    
+    <!-- React app root container -->
     <div id="root"></div>
+    
     <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
+      Notes:
+      - This file serves as the main entry point for the frontend UI.
+      - The React application is injected into the `#root` div.
+      - For development, use `npm start` to serve the app locally.
+      - For production, build the project with `npm run build` and deploy the generated `build/` folder.
     -->
   </body>
 </html>
