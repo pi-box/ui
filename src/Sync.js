@@ -37,49 +37,16 @@ export default function Sync(props) {
   const [connected, setConnected] = useState(false);
   const [syncMode, setSyncMode] = useState("waiting");
   const [fileSize, setFileSize] = useState({ current: 0, total: 0, percent: 0 });
+  const [groupId, setGroupId] = useState("טוען...");
   const { enqueueSnackbar } = useSnackbar();
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(wsUrl, {
-    shouldReconnect: () => true,
-    reconnectAttempts: 20,
-    reconnectInterval: 1000,
-    share: true,
-  });
-
-  const syncTitles = {
-    checkConn: "בודק חיבור רשת...",
-    startSync: "מחפש עידכונים חדשים",
-    copyFiles: `עודכנו ${fileSize.current} מגה (מתוך ${fileSize.total} סה\"כ)`,
-  };
-
   useEffect(() => {
+    fetch(`${syncUrl}group`)
+      .then(res => res.json())
+      .then(data => setGroupId(data.group_id || "לא זמין"))
+      .catch(() => setGroupId("שגיאה בשליפה"));
     checkConnectivity();
   }, []);
-
-  useEffect(() => {
-    if (syncMode === "waiting") {
-      setFileSize({ current: 0, total: 0, percent: 0 });
-    }
-  }, [syncMode]);
-
-  useEffect(() => {
-    if (lastMessage) {
-      const result = JSON.parse(lastMessage.data);
-      if (result._type === "progress") {
-        setFileSize({
-          current: result._data.current,
-          total: result._data.total,
-          percent: (100 * result._data.current) / result._data.total,
-        });
-        setSyncMode("copyFiles");
-      } else if (result._type === "complete") {
-        enqueueSnackbar(result.status === "ok" ? "התהליך הסתיים בהצלחה!" : result._msg, {
-          variant: result.status,
-        });
-        setSyncMode("waiting");
-      }
-    }
-  }, [lastMessage]);
 
   const checkConnectivity = (func = null) => {
     fetch(connUrl)
@@ -91,50 +58,16 @@ export default function Sync(props) {
       .catch(() => setConnected(false));
   };
 
-  const syncClicked = () => {
-    setSyncMode("checkConn");
-    checkConnectivity((res) => {
-      if (res) {
-        setSyncMode("startSync");
-        fetch(syncUrl);
-      } else {
-        setSyncMode("waiting");
-        enqueueSnackbar("אין גישה לרשת. הפעולה בוטלה!", { variant: "error" });
-      }
-    });
-  };
-
   return (
     <Box sx={{ mt: 25, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      {syncMode !== "waiting" ? (
-        <>
-          <img src="loading.jpg" width="85px" height="85px" alt="Loading" />
-          <Box sx={{ width: 1, alignItems: 'right', px: 6, mt: 10 }}>
-            <Typography variant="body" color="text.secondary">
-              <b>{syncTitles[syncMode]}</b>
-            </Typography>
-            <Box mt={2} />
-            <ThemeProvider theme={(outerTheme) => ({ ...outerTheme, direction: 'ltr' })}>
-              <LinearProgress variant="determinate" value={fileSize.percent} />
-            </ThemeProvider>
-          </Box>
-        </>
-      ) : (
-        <Button
-          sx={{ width: 230, height: 70, pb: 1.5, fontSize: 20, borderRadius: 8 }}
-          disabled={!connected}
-          variant={!connected ? "outlined" : "contained"}
-          size="large"
-          startIcon={<SyncIcon />}
-          onClick={() => syncClicked()}
-        >
-          בצע סינכרון
-        </Button>
-      )}
+      <Button sx={{ width: 230, height: 70, pb: 1.5, fontSize: 20, borderRadius: 8 }} disabled={!connected} variant={!connected ? "outlined" : "contained"} size="large" startIcon={<SyncIcon />}>
+        בצע סינכרון
+      </Button>
       <Box sx={{ position: 'fixed', bottom: 0, left: 0, m: 3 }}>
         <Typography variant="body2" color="text.secondary">
           {connected ? "ההתקן מחובר לרשת" : "ממתין לחיבור רשת..."}
           <br />
+          מזהה הקבוצה: <span style={{ direction: 'ltr', display: 'inline-block' }}>{groupId}</span>
         </Typography>
         <Typography variant="body" color="text.secondary">
           לעידכון הגדרות החיבור, <Link underline="none" href="#" onClick={() => onConfigRequest()}>לחץ כאן</Link>
